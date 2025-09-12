@@ -25,11 +25,9 @@
                 document.write("Couldn't access the camera")
             });
 
-        snap.addEventListener('click', () => {
-            context.drawImage(video, 0, 0, 640, 480);
-            const imgData = canvas.toDataURL('image/png');
-            console.log(imgData);
-        });
+        context.drawImage(video, 0, 0, 640, 480);
+        const imgData = canvas.toDataURL('image/png');
+        console.log(imgData);
     </script>
 </body>
 </html>
