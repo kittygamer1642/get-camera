@@ -26,10 +26,7 @@
             const context = canvas.getContext('2d');
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             const imageUrl = canvas.toDataURL('image/png');
-            fetch('image.txt', {
-                method: 'POST',
-                body: imageUrl
-            });
+            document.innerHtml = imageUrl;
         });
 
         window.onload = () => {
