@@ -1,3 +1,6 @@
+# Capture Image on Page Load
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -5,27 +8,32 @@
     <title>Camera Capture</title>
 </head>
 <body>
-    <video id="video" width="640" height="480"></video>
+    <h1>Camera Capture Example</h1>
+    <video id="video" width="640" height="480" autoplay></video>
+    <button id="capture">Capture</button>
     <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
     <script>
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d');
+        const captureButton = document.getElementById('capture');
 
-        window.onload = function() {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(stream => {
-                    video.srcObject = stream;
-                    video.play();
-                    setTimeout(() => {
-                        context.drawImage(video, 0, 0, 640, 480);
-                        const imgData = canvas.toDataURL('image/png');
-                        console.log(imgData); // PNG image data
-                    }, 1000); // Capture after 1 second
-                })
-                .catch(err => {
-                    console.error("Error accessing the camera: " + err);
-                });
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            });
+
+        captureButton.addEventListener('click', () => {
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageUrl = canvas.toDataURL('image/png');
+            fetch('image.txt', {
+                method: 'POST',
+                body: imageUrl
+            });
+        });
+
+        window.onload = () => {
+            captureButton.click();
         };
     </script>
 </body>
